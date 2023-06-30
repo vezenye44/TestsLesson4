@@ -1,4 +1,4 @@
-package com.geekbrains.tests.repository
+package repository
 
 import com.geekbrains.tests.model.SearchResponse
 import retrofit2.Call

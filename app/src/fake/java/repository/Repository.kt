@@ -1,10 +1,11 @@
-package com.geekbrains.tests.repository
+package repository
 
 import com.geekbrains.tests.model.SearchResponse
 import com.geekbrains.tests.presenter.RepositoryContract
+import com.geekbrains.tests.repository.RepositoryCallback
 import retrofit2.Response
 
-internal class FakeGitHubRepository : RepositoryContract {
+class Repository : RepositoryContract {
 
     override fun searchGithub(
         query: String,
