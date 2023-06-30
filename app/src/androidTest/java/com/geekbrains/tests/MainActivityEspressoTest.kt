@@ -41,6 +41,53 @@ class MainActivityEspressoTest {
     }
 
     @Test
+    fun activityEditText_HasHint() {
+        val assertion = matches(withHint("Enter keyword e.g. android"))
+        onView(withId(R.id.searchEditText)).check(assertion)
+    }
+
+    @Test
+    fun activityEditText_IsDisplayed() {
+        onView(withId(R.id.searchEditText)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun activityEditText_IsCompletelyDisplayed() {
+        onView(withId(R.id.searchEditText)).check(matches(isCompletelyDisplayed()))
+    }
+
+    @Test
+    fun activityEditText_AreEffectiveVisible() {
+        onView(withId(R.id.searchEditText)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+    }
+
+    @Test
+    fun activityButton_HasText() {
+        val assertion = matches(withText("to details"))
+        onView(withId(R.id.toDetailsActivityButton)).check(assertion)
+    }
+
+    @Test
+    fun activityButton_IsDisplayed() {
+        onView(withId(R.id.toDetailsActivityButton)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun activityButton_IsCompletelyDisplayed() {
+        onView(withId(R.id.toDetailsActivityButton)).check(matches(isCompletelyDisplayed()))
+    }
+
+    @Test
+    fun activityButton_AreEffectiveVisible() {
+        onView(withId(R.id.toDetailsActivityButton)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+    }
+
+    @Test
+    fun activityTextView_AreEffectiveVisible_Invisible() {
+        onView(withId(R.id.totalCountTextView)).check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
+    }
+
+    @Test
     fun activitySearch_IsWorking() {
         onView(withId(R.id.searchEditText)).perform(click())
         onView(withId(R.id.searchEditText)).perform(replaceText("algol"), closeSoftKeyboard())
