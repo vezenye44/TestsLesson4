@@ -3,15 +3,11 @@ package com.geekbrains.tests.automator
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions.pressImeActionButton
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
-import com.geekbrains.tests.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -52,7 +48,8 @@ class BehaviorTest {
         val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
         editText.text = "algol"
 
-        Espresso.onView(withId(R.id.searchEditText)).perform(pressImeActionButton())
+        val searchButton = uiDevice.findObject(By.res(packageName, "searchButton"))
+        searchButton.click()
 
         val changedText =
             uiDevice.wait(
