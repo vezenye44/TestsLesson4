@@ -5,9 +5,7 @@ import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.Until
+import androidx.test.uiautomator.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -99,6 +97,78 @@ class BehaviorTest {
             )
 
         assertEquals(changedText.text, "Number of results: 3807")
+    }
+
+    @Test
+    fun test_showErrorMessage() {
+        val root =
+            UiCollection(UiSelector().className("androidx.constraintlayout.widget.ConstraintLayout"))
+
+        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
+        editText.text = ""
+
+        val searchButton = uiDevice.findObject(By.res(packageName, "searchButton"))
+        searchButton.click()
+
+        val errorToast = root.getChild(UiSelector().className("android.widget.Toast"))
+
+        assertNotNull(errorToast)
+    }
+
+    @Test
+    fun test_incrementButtonMotNull() {
+        val toDetails = uiDevice.findObject(By.res(packageName, "toDetailsActivityButton"))
+        toDetails.click()
+
+        val incrementButton = uiDevice.wait(
+            Until.findObject(By.res(packageName, "incrementButton")),
+            TIMEOUT
+        )
+        assertNotNull(incrementButton)
+    }
+
+    @Test
+    fun test_decrementButtonMotNull() {
+        val toDetails = uiDevice.findObject(By.res(packageName, "toDetailsActivityButton"))
+        toDetails.click()
+
+        val decrementButton = uiDevice.wait(
+            Until.findObject(By.res(packageName, "decrementButton")),
+            TIMEOUT
+        )
+        assertNotNull(decrementButton)
+    }
+
+    @Test
+    fun test_incrementButtonClicked() {
+        val toDetails = uiDevice.findObject(By.res(packageName, "toDetailsActivityButton"))
+        toDetails.click()
+
+        val incrementButton = uiDevice.wait(
+            Until.findObject(By.res(packageName, "incrementButton")),
+            TIMEOUT
+        )
+        val totalCountTextView = uiDevice.findObject(By.res(packageName, "totalCountTextView"))
+
+        incrementButton.click()
+
+        assertEquals(totalCountTextView.text, "Number of results: 1")
+    }
+
+    @Test
+    fun test_decrementButtonClicked() {
+        val toDetails = uiDevice.findObject(By.res(packageName, "toDetailsActivityButton"))
+        toDetails.click()
+
+        val decrementButton = uiDevice.wait(
+            Until.findObject(By.res(packageName, "decrementButton")),
+            TIMEOUT
+        )
+        val totalCountTextView = uiDevice.findObject(By.res(packageName, "totalCountTextView"))
+
+        decrementButton.click()
+
+        assertEquals(totalCountTextView.text, "Number of results: -1")
     }
 
 }
