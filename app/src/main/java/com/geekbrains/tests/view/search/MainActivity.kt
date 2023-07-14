@@ -1,18 +1,15 @@
 package com.geekbrains.tests.view.search
 
-import repository.Repository
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView.OnEditorActionListener
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.geekbrains.tests.R
 import com.geekbrains.tests.databinding.ActivityMainBinding
 import com.geekbrains.tests.model.SearchResult
-import com.geekbrains.tests.presenter.RepositoryContract
-import com.geekbrains.tests.presenter.search.PresenterSearchContract
-import com.geekbrains.tests.presenter.search.SearchPresenter
 import com.geekbrains.tests.view.details.DetailsActivity
 import java.util.*
 
@@ -21,7 +18,9 @@ class MainActivity : AppCompatActivity(), ViewSearchContract {
     private lateinit var binding: ActivityMainBinding
 
     private val adapter = SearchResultAdapter()
-    private val presenter: PresenterSearchContract = SearchPresenter(this, createRepository())
+    private val viewModel: SearchViewModel by lazy {
+        ViewModelProvider(this)[SearchViewModel::class.java]
+    }
     private var totalCount: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +37,37 @@ class MainActivity : AppCompatActivity(), ViewSearchContract {
         setSearchListener()
         setQueryListener()
         setRecyclerView()
+        viewModel.subscribeToLiveData().observe(this) { onStateChange(it) }
     }
+
+    private fun onStateChange(screenState: ScreenState) {
+        when (screenState) {
+            is ScreenState.Working -> {
+                val searchResponse = screenState.searchResponse
+                val totalCount = searchResponse.totalCount
+                binding.progressBar.visibility = View.GONE
+                with(binding.totalCountTextView) {
+                    visibility = View.VISIBLE
+                    text =
+                        String.format(
+                            Locale.getDefault(),
+                            getString(R.string.results_count),
+                            totalCount
+                        )
+                }
+                this.totalCount = totalCount!!
+                adapter.updateResults(searchResponse.searchResults!!)
+            }
+            is ScreenState.Loading -> {
+                binding.progressBar.visibility = View.VISIBLE
+            }
+            is ScreenState.Error -> {
+                binding.progressBar.visibility = View.GONE
+                Toast.makeText(this, screenState.error.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 
     private fun setRecyclerView() {
         binding.recyclerView.setHasFixedSize(true)
@@ -49,7 +78,7 @@ class MainActivity : AppCompatActivity(), ViewSearchContract {
         binding.searchButton.setOnClickListener {
             val query = binding.searchEditText.text.toString()
             if (query.isNotBlank()) {
-                presenter.searchGitHub(query)
+                viewModel.searchGitHub(query)
             } else {
                 Toast.makeText(
                     this@MainActivity,
@@ -65,7 +94,7 @@ class MainActivity : AppCompatActivity(), ViewSearchContract {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val query = binding.searchEditText.text.toString()
                 if (query.isNotBlank()) {
-                    presenter.searchGitHub(query)
+                    viewModel.searchGitHub(query)
                     return@OnEditorActionListener true
                 } else {
                     Toast.makeText(
@@ -79,11 +108,6 @@ class MainActivity : AppCompatActivity(), ViewSearchContract {
             false
         })
     }
-
-    private fun createRepository(): RepositoryContract {
-        return Repository()
-    }
-
 
     override fun displaySearchResults(
         searchResults: List<SearchResult>,
