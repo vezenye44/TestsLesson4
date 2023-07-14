@@ -44,4 +44,8 @@ class Repository(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
+
+    override suspend fun searchGithubAsync(query: String): SearchResponse {
+        return gitHubApi.searchGithubAsync(query).await()
+    }
 }
